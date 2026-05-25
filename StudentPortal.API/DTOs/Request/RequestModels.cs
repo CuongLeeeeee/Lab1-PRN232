@@ -97,10 +97,10 @@ public class UpdateEnrollmentRequest : CreateEnrollmentRequest { }
 public class PaginationRequest
 {
     [FromQuery(Name = "page")]
-    public int? Page { get; set; }
+    public int Page { get; set; } = 1;
 
     [FromQuery(Name = "pagesize")]
-    public int? PageSize { get; set; }
+    public int PageSize { get; set; } = 10;
 
     [FromQuery(Name = "search")]
     public string? Search { get; set; }
@@ -109,15 +109,11 @@ public class PaginationRequest
     public string? SortBy { get; set; }
 
     [FromQuery(Name = "sortdescending")]
-    public bool? SortDescending { get; set; }
+    public bool SortDescending { get; set; } = false;
 
     [FromQuery(Name = "$select")]
     public string? Select { get; set; }
 
     [FromQuery(Name = "$expand")]
     public string? Expand { get; set; }
-
-    public int ResolvedPage => Page ?? 1;
-    public int ResolvedPageSize => PageSize ?? 10;
-    public bool ResolvedSortDescending => SortDescending ?? false;
 }
