@@ -12,9 +12,9 @@ public class StudentService : IStudentService
 
     public StudentService(IStudentRepository repo) => _repo = repo;
 
-    public async Task<PagedResult<StudentModel>> GetAllAsync(QueryParameters parameters, bool includeCourses = false)
+    public async Task<PagedResult<StudentModel>> GetAllAsync(QueryParameters parameters, bool includeEnrollments = false)
     {
-        var paged = await _repo.SearchAsync(parameters, includeCourses);
+        var paged = await _repo.SearchAsync(parameters, includeEnrollments);
         return new PagedResult<StudentModel>
         {
             Items = paged.Items.Select(e => e.ToModel()),

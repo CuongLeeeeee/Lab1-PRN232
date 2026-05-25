@@ -110,25 +110,17 @@ public class StudentExpandedResponse
     public string FullName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
 
-    // populated only when $expand=courses
-    public List<EnrolledCourseResponse>? Courses { get; set; }
+    // populated only when $expand=enrollments
+    public List<EnrollmentResponse>? Enrollments { get; set; }
 }
 
 /// <summary>Course info as seen from a student enrollment.</summary>
-public class EnrolledCourseResponse
-{
-    public int CourseId { get; set; }
-    public string CourseName { get; set; } = string.Empty;
-    public int SemesterId { get; set; }
-    public string SemesterName { get; set; } = string.Empty;
-    public DateTime EnrolledAt { get; set; }
-}
-
 public class EnrollmentResponse
 {
     public int EnrollmentId { get; set; }
     public int CourseId { get; set; }
     public string CourseName { get; set; } = string.Empty;
+    public int SemesterId { get; set; }
     public string SemesterName { get; set; } = string.Empty;
     public DateTime EnrolledAt { get; set; }
 }
@@ -179,5 +171,30 @@ public static class SelectProjector
         return !fieldList.Any()
             ? items.Cast<object>()
             : items.Select(item => Project(item!, fieldList));
+    }
+
+    /// <summary>Base enrollment response — no navigation properties.</summary>
+    /// <summary>Base enrollment — minimal fields only.</summary>
+    public class EnrollmentBaseResponse
+    {
+        public int EnrollmentId { get; set; }
+        public int StudentId { get; set; }
+        public int CourseId { get; set; }
+        public DateTime EnrolledAt { get; set; }
+    }
+
+    /// <summary>Expanded enrollment — student and/or course nested objects.</summary>
+    public class EnrollmentExpandedResponse
+    {
+        public int EnrollmentId { get; set; }
+        public int StudentId { get; set; }
+        public int CourseId { get; set; }
+        public DateTime EnrolledAt { get; set; }
+
+        // populated when $expand=student
+        public StudentResponse? Student { get; set; }
+
+        // populated when $expand=course
+        public CourseResponse? Course { get; set; }
     }
 }

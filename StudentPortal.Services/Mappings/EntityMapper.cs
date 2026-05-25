@@ -75,9 +75,10 @@ public static class EntityMapper
         StudentId = e.StudentId,
         FullName = e.FullName,
         Email = e.Email,
-        Courses = e.Enrollments?.Select(en => new EnrolledCourseModel
+        Enrollments = e.Enrollments?.Select(en => new EnrollmentModel
         {
-            CourseId = en.Course?.CourseId ?? en.CourseId,
+            EnrollmentId = en.EnrollmentId,
+            CourseId = en.CourseId,
             CourseName = en.Course?.CourseName ?? string.Empty,
             SemesterId = en.Course?.SemesterId ?? 0,
             SemesterName = en.Course?.Semester?.SemesterName ?? string.Empty,
@@ -100,5 +101,15 @@ public static class EntityMapper
         CourseName   = e.Course?.CourseName ?? string.Empty,
         SemesterName = e.Course?.Semester?.SemesterName ?? string.Empty,
         EnrolledAt   = e.EnrolledAt
+    };
+
+    public static EnrollmentListModel ToListModel(this Enrollment e) => new()
+    {
+        EnrollmentId = e.EnrollmentId,
+        StudentId = e.StudentId,
+        CourseId = e.CourseId,
+        EnrolledAt = e.EnrolledAt,
+        Student = e.Student is not null ? e.Student.ToModel() : null,
+        Course = e.Course is not null ? e.Course.ToModel() : null
     };
 }

@@ -10,18 +10,20 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<ISemesterRepository, SemesterRepository>();
-        services.AddScoped<ICourseRepository,   CourseRepository>();
-        services.AddScoped<ISubjectRepository,  SubjectRepository>();
-        services.AddScoped<IStudentRepository,  StudentRepository>();
+        services.AddScoped<ICourseRepository, CourseRepository>();
+        services.AddScoped<ISubjectRepository, SubjectRepository>();
+        services.AddScoped<IStudentRepository, StudentRepository>();
+        services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
         return services;
     }
 
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<ISemesterService, SemesterService>();
-        services.AddScoped<ICourseService,   CourseService>();
-        services.AddScoped<ISubjectService,  SubjectService>();
-        services.AddScoped<IStudentService,  StudentService>();
+        services.AddScoped<ICourseService, CourseService>();
+        services.AddScoped<ISubjectService, SubjectService>();
+        services.AddScoped<IStudentService, StudentService>();
+        services.AddScoped<IEnrollmentService, EnrollmentService>();
         return services;
     }
 }

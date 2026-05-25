@@ -5,7 +5,7 @@ namespace StudentPortal.Services.Interfaces;
 
 public interface IStudentService
 {
-    Task<PagedResult<StudentModel>> GetAllAsync(QueryParameters parameters, bool includeCourses = false);
+    Task<PagedResult<StudentModel>> GetAllAsync(QueryParameters parameters, bool includeEnrollments = false);
     Task<StudentModel?> GetByIdAsync(int id);
     Task<StudentModel?> GetByIdWithEnrollmentsAsync(int id);
     Task<StudentModel> CreateAsync(StudentModel model);

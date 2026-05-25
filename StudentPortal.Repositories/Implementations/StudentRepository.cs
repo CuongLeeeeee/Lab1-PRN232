@@ -29,11 +29,11 @@ public class StudentRepository : GenericRepository<Student>, IStudentRepository
             .AsNoTracking()
             .FirstOrDefaultAsync(s => s.StudentId == id);
 
-    public async Task<PagedResult<Student>> SearchAsync(QueryParameters parameters, bool includeCourses = false)
+    public async Task<PagedResult<Student>> SearchAsync(QueryParameters parameters, bool includeEnrollments = false)
     {
         var query = _context.Students.AsNoTracking();
 
-        if (includeCourses)
+        if (includeEnrollments)
             query = query
                 .Include(s => s.Enrollments)
                     .ThenInclude(e => e.Course)
