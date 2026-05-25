@@ -86,16 +86,16 @@ public class PaginationRequest
     [FromQuery(Name = "page")]
     public int Page { get; set; } = 1;
 
-    [FromQuery(Name = "pageSize")]
+    [FromQuery(Name = "pagesize")]
     public int PageSize { get; set; } = 10;
 
     [FromQuery(Name = "search")]
     public string? Search { get; set; }
 
-    [FromQuery(Name = "sortBy")]
+    [FromQuery(Name = "sortby")]
     public string? SortBy { get; set; }
 
-    [FromQuery(Name = "sortDescending")]
+    [FromQuery(Name = "sortdescending")]
     public bool SortDescending { get; set; } = false;
 
     [FromQuery(Name = "$select")]
