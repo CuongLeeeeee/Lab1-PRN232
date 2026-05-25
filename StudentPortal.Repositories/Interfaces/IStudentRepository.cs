@@ -8,5 +8,5 @@ public interface IStudentRepository : IGenericRepository<Student>
     Task<Student?> GetByEmailAsync(string email);
     Task<bool> EmailExistsAsync(string email, int? excludeId = null);
     Task<Student?> GetByIdWithEnrollmentsAsync(int id);
-    Task<PagedResult<Student>> SearchAsync(QueryParameters parameters, bool includeCourses = false);
+    Task<PagedResult<Student>> SearchAsync(QueryParameters parameters, bool includeEnrollments = false);
 }

@@ -1,6 +1,7 @@
 using StudentPortal.API.DTOs.Response;
 using StudentPortal.Repositories.Common;
 using StudentPortal.Services.Models;
+using static StudentPortal.API.DTOs.Response.SelectProjector;
 
 namespace StudentPortal.API.Extensions;
 
@@ -91,28 +92,29 @@ public static class ResponseMapper
     };
 
     public static StudentExpandedResponse ToExpandedResponse(
-        this StudentModel m,
-        IEnumerable<string> expands)
+    this StudentModel m,
+    IEnumerable<string> expands)
+{
+    var expandList = expands.ToList();
+    return new StudentExpandedResponse
     {
-        var expandList = expands.ToList();
-        return new StudentExpandedResponse
-        {
-            StudentId = m.StudentId,
-            FullName = m.FullName,
-            Email = m.Email,
+        StudentId = m.StudentId,
+        FullName  = m.FullName,
+        Email     = m.Email,
 
-            Courses = expandList.Contains("courses")
-                ? m.Courses.Select(c => new EnrolledCourseResponse
-                {
-                    CourseId = c.CourseId,
-                    CourseName = c.CourseName,
-                    SemesterId = c.SemesterId,
-                    SemesterName = c.SemesterName,
-                    EnrolledAt = c.EnrolledAt
-                }).ToList()
-                : null
-        };
-    }
+        Enrollments = expandList.Contains("enrollments")
+            ? m.Enrollments.Select(e => new EnrollmentResponse
+              {
+                  EnrollmentId = e.EnrollmentId,
+                  CourseId     = e.CourseId,
+                  CourseName   = e.CourseName,
+                  SemesterId   = e.SemesterId,
+                  SemesterName = e.SemesterName,
+                  EnrolledAt   = e.EnrolledAt
+              }).ToList()
+            : null
+    };
+}
 
     public static StudentModel ToModel(this DTOs.Request.CreateStudentRequest r) => new()
     {
@@ -185,6 +187,36 @@ public static class ResponseMapper
 
             Courses = expandList.Contains("courses")
                 ? m.Courses.Select(c => c.ToResponse()).ToList()
+                : null
+        };
+    }
+
+    public static EnrollmentBaseResponse ToResponse(this EnrollmentListModel m) => new()
+    {
+        EnrollmentId = m.EnrollmentId,
+        StudentId = m.StudentId,
+        CourseId = m.CourseId,
+        EnrolledAt = m.EnrolledAt
+    };
+
+    public static EnrollmentExpandedResponse ToExpandedResponse(
+        this EnrollmentListModel m,
+        IEnumerable<string> expands)
+    {
+        var expandList = expands.ToList();
+        return new EnrollmentExpandedResponse
+        {
+            EnrollmentId = m.EnrollmentId,
+            StudentId = m.StudentId,
+            CourseId = m.CourseId,
+            EnrolledAt = m.EnrolledAt,
+
+            Student = expandList.Contains("student") && m.Student is not null
+                ? m.Student.ToResponse()
+                : null,
+
+            Course = expandList.Contains("course") && m.Course is not null
+                ? m.Course.ToResponse()
                 : null
         };
     }

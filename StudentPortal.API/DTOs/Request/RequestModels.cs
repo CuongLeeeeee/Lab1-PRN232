@@ -81,6 +81,19 @@ public class UpdateStudentRequest : CreateStudentRequest { }
 
 // ── Shared query parameters ───────────────────────────────────────────────────
 
+public class CreateEnrollmentRequest
+{
+    /// <example>1</example>
+    [Required, Range(1, int.MaxValue)]
+    public int StudentId { get; set; }
+
+    /// <example>1</example>
+    [Required, Range(1, int.MaxValue)]
+    public int CourseId { get; set; }
+}
+
+public class UpdateEnrollmentRequest : CreateEnrollmentRequest { }
+
 public class PaginationRequest
 {
     [FromQuery(Name = "page")]

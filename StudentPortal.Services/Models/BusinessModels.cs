@@ -54,8 +54,18 @@ public class StudentModel
     public string FullName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
 
-    // populated when $expand=courses
-    public List<EnrolledCourseModel> Courses { get; set; } = new();
+    // populated when $expand=enrollments
+    public List<EnrollmentModel> Enrollments { get; set; } = new();
+}
+
+public class EnrollmentModel
+{
+    public int EnrollmentId { get; set; }
+    public int CourseId { get; set; }
+    public string CourseName { get; set; } = string.Empty;
+    public int SemesterId { get; set; }
+    public string SemesterName { get; set; } = string.Empty;
+    public DateTime EnrolledAt { get; set; }
 }
 
 public class EnrolledCourseModel
@@ -67,11 +77,16 @@ public class EnrolledCourseModel
     public DateTime EnrolledAt { get; set; }
 }
 
-public class EnrollmentModel
+public class EnrollmentListModel
 {
     public int EnrollmentId { get; set; }
+    public int StudentId { get; set; }
     public int CourseId { get; set; }
-    public string CourseName { get; set; } = string.Empty;
-    public string SemesterName { get; set; } = string.Empty;
     public DateTime EnrolledAt { get; set; }
+
+    // populated when $expand=student
+    public StudentModel? Student { get; set; }
+
+    // populated when $expand=course
+    public CourseModel? Course { get; set; }
 }

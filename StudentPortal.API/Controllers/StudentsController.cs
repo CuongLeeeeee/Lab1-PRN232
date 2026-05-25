@@ -42,9 +42,9 @@ public class StudentsController : ControllerBase
 
         var expandedRels = parameters.GetExpandedRelations().ToList();
         var selectedFields = parameters.GetSelectedFields().ToList();
-        var includeCourses = expandedRels.Contains("courses");
+        var includeEnrollments = expandedRels.Contains("enrollments");
 
-        var paged = await _service.GetAllAsync(parameters, includeCourses);
+        var paged = await _service.GetAllAsync(parameters, includeEnrollments);
 
         IEnumerable<object> items;
         if (expandedRels.Any())

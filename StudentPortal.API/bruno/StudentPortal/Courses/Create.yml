@@ -1,0 +1,22 @@
+info:
+  name: Create
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: http://localhost:5000/api/Courses
+  body:
+    type: json
+    data: |-
+      {
+        "courseName": "test2",
+        "semesterId": 1
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
