@@ -83,17 +83,19 @@ public class UpdateStudentRequest : CreateStudentRequest { }
 
 public class PaginationRequest
 {
-    /// <example>1</example>
+    [FromQuery(Name = "page")]
     public int Page { get; set; } = 1;
 
-    /// <example>10</example>
+    [FromQuery(Name = "pageSize")]
     public int PageSize { get; set; } = 10;
 
+    [FromQuery(Name = "search")]
     public string? Search { get; set; }
 
+    [FromQuery(Name = "sortBy")]
     public string? SortBy { get; set; }
 
-    /// <example>false</example>
+    [FromQuery(Name = "sortDescending")]
     public bool SortDescending { get; set; } = false;
 
     [FromQuery(Name = "$select")]
@@ -101,5 +103,4 @@ public class PaginationRequest
 
     [FromQuery(Name = "$expand")]
     public string? Expand { get; set; }
-
 }
