@@ -10,7 +10,7 @@
     "version": "v1"
   },
   "paths": {
-    "/api/Courses": {
+    "/api/courses": {
       "get": {
         "tags": [
           "Courses"
@@ -18,47 +18,41 @@
         "summary": "Get all courses with pagination, search, sorting, select, and expand options.",
         "parameters": [
           {
-            "name": "Page",
+            "name": "page",
             "in": "query",
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "example": 1
-            },
-            "example": 1
+              "format": "int32"
+            }
           },
           {
-            "name": "PageSize",
+            "name": "pagesize",
             "in": "query",
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "example": 10
-            },
-            "example": 10
+              "format": "int32"
+            }
           },
           {
-            "name": "Search",
+            "name": "search",
             "in": "query",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "SortBy",
+            "name": "sortby",
             "in": "query",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "SortDescending",
+            "name": "sortdescending",
             "in": "query",
             "schema": {
-              "type": "boolean",
-              "example": false
-            },
-            "example": false
+              "type": "boolean"
+            }
           },
           {
             "name": "$select",
@@ -137,7 +131,7 @@
         }
       }
     },
-    "/api/Courses/{id}": {
+    "/api/courses/{id}": {
       "get": {
         "tags": [
           "Courses"
@@ -289,7 +283,210 @@
         }
       }
     },
-    "/api/Semesters": {
+    "/api/enrollments": {
+      "get": {
+        "tags": [
+          "Enrollments"
+        ],
+        "summary": "Get all enrollments with pagination, filtering, $select and $expand.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pagesize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortby",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortdescending",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "$select",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "$expand",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a paged list of enrollments.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectPagedResponseApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Enrollments"
+        ],
+        "summary": "Enroll a student into a course.",
+        "requestBody": {
+          "description": "StudentId and CourseId.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEnrollmentRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEnrollmentRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEnrollmentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Enrollment created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnrollmentBaseResponseApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed, student/course not found, or already enrolled.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/enrollments/{id}": {
+      "get": {
+        "tags": [
+          "Enrollments"
+        ],
+        "summary": "Get a single enrollment by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Enrollment ID.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enrollment found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnrollmentBaseResponseApiResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Enrollment not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Enrollments"
+        ],
+        "summary": "Delete an enrollment by ID (unenroll a student).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Enrollment ID.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enrollment deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectApiResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Enrollment not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/semesters": {
       "get": {
         "tags": [
           "Semesters"
@@ -297,47 +494,41 @@
         "summary": "Get all semesters with pagination, search, sorting, select, and expand options.",
         "parameters": [
           {
-            "name": "Page",
+            "name": "page",
             "in": "query",
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "example": 1
-            },
-            "example": 1
+              "format": "int32"
+            }
           },
           {
-            "name": "PageSize",
+            "name": "pagesize",
             "in": "query",
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "example": 10
-            },
-            "example": 10
+              "format": "int32"
+            }
           },
           {
-            "name": "Search",
+            "name": "search",
             "in": "query",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "SortBy",
+            "name": "sortby",
             "in": "query",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "SortDescending",
+            "name": "sortdescending",
             "in": "query",
             "schema": {
-              "type": "boolean",
-              "example": false
-            },
-            "example": false
+              "type": "boolean"
+            }
           },
           {
             "name": "$select",
@@ -416,7 +607,7 @@
         }
       }
     },
-    "/api/Semesters/{id}": {
+    "/api/semesters/{id}": {
       "get": {
         "tags": [
           "Semesters"
@@ -568,7 +759,7 @@
         }
       }
     },
-    "/api/Students": {
+    "/api/students": {
       "get": {
         "tags": [
           "Students"
@@ -576,47 +767,41 @@
         "summary": "Get all students with pagination, search, sorting, select, and expand options.",
         "parameters": [
           {
-            "name": "Page",
+            "name": "page",
             "in": "query",
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "example": 1
-            },
-            "example": 1
+              "format": "int32"
+            }
           },
           {
-            "name": "PageSize",
+            "name": "pagesize",
             "in": "query",
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "example": 10
-            },
-            "example": 10
+              "format": "int32"
+            }
           },
           {
-            "name": "Search",
+            "name": "search",
             "in": "query",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "SortBy",
+            "name": "sortby",
             "in": "query",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "SortDescending",
+            "name": "sortdescending",
             "in": "query",
             "schema": {
-              "type": "boolean",
-              "example": false
-            },
-            "example": false
+              "type": "boolean"
+            }
           },
           {
             "name": "$select",
@@ -695,7 +880,7 @@
         }
       }
     },
-    "/api/Students/{id}": {
+    "/api/students/{id}": {
       "get": {
         "tags": [
           "Students"
@@ -847,7 +1032,7 @@
         }
       }
     },
-    "/api/Subjects": {
+    "/api/subjects": {
       "get": {
         "tags": [
           "Subjects"
@@ -855,47 +1040,41 @@
         "summary": "Get all subjects with pagination, search, sorting, select, and expand options.",
         "parameters": [
           {
-            "name": "Page",
+            "name": "page",
             "in": "query",
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "example": 1
-            },
-            "example": 1
+              "format": "int32"
+            }
           },
           {
-            "name": "PageSize",
+            "name": "pagesize",
             "in": "query",
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "example": 10
-            },
-            "example": 10
+              "format": "int32"
+            }
           },
           {
-            "name": "Search",
+            "name": "search",
             "in": "query",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "SortBy",
+            "name": "sortby",
             "in": "query",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "SortDescending",
+            "name": "sortdescending",
             "in": "query",
             "schema": {
-              "type": "boolean",
-              "example": false
-            },
-            "example": false
+              "type": "boolean"
+            }
           },
           {
             "name": "$select",
@@ -974,7 +1153,7 @@
         }
       }
     },
-    "/api/Subjects/{id}": {
+    "/api/subjects/{id}": {
       "get": {
         "tags": [
           "Subjects"
@@ -1202,6 +1381,30 @@
         "additionalProperties": false,
         "description": "Payload for creating a new Course."
       },
+      "CreateEnrollmentRequest": {
+        "required": [
+          "courseId",
+          "studentId"
+        ],
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32",
+            "example": 1
+          },
+          "courseId": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32",
+            "example": 1
+          }
+        },
+        "additionalProperties": false
+      },
       "CreateSemesterRequest": {
         "required": [
           "endDate",
@@ -1284,6 +1487,53 @@
         },
         "additionalProperties": false,
         "description": "Payload for creating a new Subject."
+      },
+      "EnrollmentBaseResponse": {
+        "type": "object",
+        "properties": {
+          "enrollmentId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "studentId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "courseId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "enrolledAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Base enrollment response — no navigation properties."
+      },
+      "EnrollmentBaseResponseApiResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/EnrollmentBaseResponse"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standard API response envelope."
       },
       "ObjectApiResponse": {
         "type": "object",

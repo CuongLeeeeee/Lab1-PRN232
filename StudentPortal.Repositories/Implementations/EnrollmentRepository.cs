@@ -47,9 +47,10 @@ public class EnrollmentRepository : IEnrollmentRepository
                 e.Student.FullName.Contains(parameters.Search) ||
                 e.Course.CourseName.Contains(parameters.Search));
 
-        query = parameters.SortBy?.ToLower() switch
+        query = parameters.Sort?.ToLower() switch
         {
-            "enrolledat" => parameters.SortDescending ? query.OrderByDescending(e => e.EnrolledAt) : query.OrderBy(e => e.EnrolledAt),
+            "enrolldate" => query.OrderBy(e => e.EnrolledAt),
+            "-enrolldate" => query.OrderByDescending(e => e.EnrolledAt),
             _ => query.OrderBy(e => e.EnrollmentId)
         };
 

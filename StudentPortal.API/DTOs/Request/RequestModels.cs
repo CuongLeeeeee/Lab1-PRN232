@@ -95,21 +95,21 @@ public class CreateEnrollmentRequest
 public class UpdateEnrollmentRequest : CreateEnrollmentRequest { }
 
 public class PaginationRequest
-{
+
+{   /// <example>1</example>
     [FromQuery(Name = "page")]
     public int Page { get; set; } = 1;
 
+    /// <example>10</example>
     [FromQuery(Name = "pagesize")]
     public int PageSize { get; set; } = 10;
 
     [FromQuery(Name = "search")]
     public string? Search { get; set; }
 
-    [FromQuery(Name = "sortby")]
-    public string? SortBy { get; set; }
-
-    [FromQuery(Name = "sortdescending")]
-    public bool SortDescending { get; set; } = false;
+    /// <summary>Sort order for the results, use '-' for descending order.</summary>
+    [FromQuery(Name = "sort")]
+    public string? Sort { get; set; }
 
     [FromQuery(Name = "$select")]
     public string? Select { get; set; }

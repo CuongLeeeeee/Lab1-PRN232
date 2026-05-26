@@ -26,11 +26,14 @@ public class SemesterRepository : GenericRepository<Semester>, ISemesterReposito
         if (!string.IsNullOrWhiteSpace(parameters.Search))
             query = query.Where(s => s.SemesterName.Contains(parameters.Search));
 
-        query = parameters.SortBy?.ToLower() switch
+        query = parameters.Sort?.ToLower() switch
         {
-            "name" => parameters.SortDescending ? query.OrderByDescending(s => s.SemesterName) : query.OrderBy(s => s.SemesterName),
-            "startdate" => parameters.SortDescending ? query.OrderByDescending(s => s.StartDate) : query.OrderBy(s => s.StartDate),
-            "enddate" => parameters.SortDescending ? query.OrderByDescending(s => s.EndDate) : query.OrderBy(s => s.EndDate),
+            "name" => query.OrderBy(s => s.SemesterName),
+            "-name" => query.OrderByDescending(s => s.SemesterName),
+            "startdate" => query.OrderBy(s => s.StartDate),
+            "-startdate" => query.OrderByDescending(s => s.StartDate),
+            "enddate" => query.OrderBy(s => s.EndDate),
+            "-enddate" => query.OrderByDescending(s => s.EndDate),
             _ => query.OrderBy(s => s.SemesterId)
         };
 

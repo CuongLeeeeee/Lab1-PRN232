@@ -35,8 +35,7 @@ public class EnrollmentsController : ControllerBase
             Page = request.Page,
             PageSize = request.PageSize,
             Search = request.Search,
-            SortBy = request.SortBy,
-            SortDescending = request.SortDescending,
+            Sort = request.Sort,
             Select = request.Select,
             Expand = request.Expand
         };

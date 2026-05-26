@@ -38,11 +38,14 @@ public class SubjectRepository : GenericRepository<Subject>, ISubjectRepository
                 s.SubjectName.Contains(parameters.Search) ||
                 s.SubjectCode.Contains(parameters.Search));
 
-        query = parameters.SortBy?.ToLower() switch
+        query = parameters.Sort?.ToLower() switch
         {
-            "code" => parameters.SortDescending ? query.OrderByDescending(s => s.SubjectCode) : query.OrderBy(s => s.SubjectCode),
-            "name" => parameters.SortDescending ? query.OrderByDescending(s => s.SubjectName) : query.OrderBy(s => s.SubjectName),
-            "credit" => parameters.SortDescending ? query.OrderByDescending(s => s.Credit) : query.OrderBy(s => s.Credit),
+            "code" => query.OrderBy(s => s.SubjectCode),
+            "-code" => query.OrderByDescending(s => s.SubjectCode),
+            "name" => query.OrderBy(s => s.SubjectName),
+            "-name" => query.OrderByDescending(s => s.SubjectName),
+            "credit" => query.OrderBy(s => s.Credit),
+            "-credit" => query.OrderByDescending(s => s.Credit),
             _ => query.OrderBy(s => s.SubjectId)
         };
 

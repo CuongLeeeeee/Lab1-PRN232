@@ -3,6 +3,7 @@ using StudentPortal.API.DTOs.Request;
 using StudentPortal.API.DTOs.Response;
 using StudentPortal.API.Extensions;
 using StudentPortal.Repositories.Common;
+using StudentPortal.Services.Implementations;
 using StudentPortal.Services.Interfaces;
 
 namespace StudentPortal.API.Controllers;
@@ -13,14 +14,19 @@ namespace StudentPortal.API.Controllers;
 [Produces("application/json")]
 public class CoursesController : ControllerBase
 {
-    private readonly ICourseService _service;
-    private readonly ILogger<CoursesController> _logger;
+    private readonly ICourseService _courseService;
+private readonly IEnrollmentService _enrollmentService;
+private readonly ILogger<CoursesController> _logger;
 
-    public CoursesController(ICourseService service, ILogger<CoursesController> logger)
-    {
-        _service = service;
-        _logger  = logger;
-    }
+public CoursesController(
+    ICourseService courseService,
+    IEnrollmentService enrollmentService,
+    ILogger<CoursesController> logger)
+{
+    _courseService     = courseService;
+    _enrollmentService = enrollmentService;
+    _logger            = logger;
+}
 
     /// <summary>Get all courses with pagination, search, sorting, select, and expand options.</summary>
     /// <param name="request">Pagination and filter parameters.</param>
@@ -38,8 +44,7 @@ public class CoursesController : ControllerBase
             Page = request.Page,
             PageSize = request.PageSize,
             Search = request.Search,
-            SortBy = request.SortBy,
-            SortDescending = request.SortDescending,
+            Sort = request.Sort,
             Select = request.Select,
             Expand = request.Expand
         };
@@ -48,7 +53,7 @@ public class CoursesController : ControllerBase
         var selectedFields = parameters.GetSelectedFields().ToList();
         var includeSubjects = expandedRels.Contains("subjects");  // ← detect early
 
-        var paged = await _service.GetAllAsync(parameters, semesterId, includeSubjects); // ← pass flag
+        var paged = await _courseService.GetAllAsync(parameters, semesterId, includeSubjects); // ← pass flag
 
         IEnumerable<object> items;
         if (expandedRels.Any())
@@ -83,11 +88,71 @@ public class CoursesController : ControllerBase
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id)
     {
-        var model = await _service.GetByIdWithDetailsAsync(id);
+        var model = await _courseService.GetByIdWithDetailsAsync(id);
         if (model is null)
             return NotFound(ApiResponse<object>.Fail($"Course with ID {id} was not found."));
 
         return Ok(ApiResponse<CourseResponse>.Ok(model.ToResponse()));
+    }
+
+    /// <summary>Get all enrollments for a specific course.</summary>
+    /// <param name="id">Course ID.</param>
+    /// <param name="request">Pagination and projection parameters.</param>
+    /// <response code="200">Returns paged enrollments for the course.</response>
+    /// <response code="404">Course not found.</response>
+    [HttpGet("{id:int}/enrollments")]
+    [ProducesResponseType(typeof(ApiResponse<PagedResponse<object>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetEnrollments(
+        int id,
+        [FromQuery] PaginationRequest request)
+    {
+        // verify course exists
+        var course = await _courseService.GetByIdAsync(id);
+        if (course is null)
+            return NotFound(ApiResponse<object>.Fail($"Course with ID {id} was not found."));
+
+        var parameters = new QueryParameters
+        {
+            Page = request.Page,
+            PageSize = request.PageSize,
+            Search = request.Search,
+            Sort = request.Sort,
+            Select = request.Select,
+            Expand = request.Expand
+        };
+
+        var expandedRels = parameters.GetExpandedRelations().ToList();
+        var selectedFields = parameters.GetSelectedFields().ToList();
+        var includeStudent = expandedRels.Contains("student");
+
+        // force courseId filter to the route id
+        var paged = await _enrollmentService.GetAllAsync(
+            parameters, studentId: null, courseId: id,
+            includeStudent: includeStudent, includeCourse: false);
+
+        IEnumerable<object> items;
+        if (expandedRels.Any())
+            items = paged.Items.Select(m => (object)m.ToExpandedResponse(expandedRels));
+        else
+            items = paged.Items.Select(m => (object)m.ToResponse());
+
+        if (selectedFields.Any())
+            items = SelectProjector.ProjectMany(items, selectedFields);
+
+        var response = new PagedResponse<object>
+        {
+            Items = items,
+            TotalCount = paged.TotalCount,
+            Page = paged.Page,
+            PageSize = paged.PageSize,
+            TotalPages = paged.TotalPages,
+            HasPreviousPage = paged.HasPreviousPage,
+            HasNextPage = paged.HasNextPage
+        };
+
+        return Ok(ApiResponse<PagedResponse<object>>.Ok(response,
+            $"Retrieved {response.TotalCount} enrollment(s) for course {id}."));
     }
 
     /// <summary>Create a new course.</summary>
@@ -106,7 +171,7 @@ public class CoursesController : ControllerBase
         try
         {
             var model   = request.ToModel();
-            var created = await _service.CreateAsync(model);
+            var created = await _courseService.CreateAsync(model);
             return CreatedAtAction(nameof(GetById), new { id = created.CourseId },
                 ApiResponse<CourseResponse>.Ok(created.ToResponse(), "Course created successfully."));
         }
@@ -135,7 +200,7 @@ public class CoursesController : ControllerBase
         try
         {
             var model   = request.ToModel();
-            var updated = await _service.UpdateAsync(id, model);
+            var updated = await _courseService.UpdateAsync(id, model);
 
             if (updated is null)
                 return NotFound(ApiResponse<object>.Fail($"Course with ID {id} was not found."));
@@ -157,7 +222,7 @@ public class CoursesController : ControllerBase
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
     {
-        var deleted = await _service.DeleteAsync(id);
+        var deleted = await _courseService.DeleteAsync(id);
         if (!deleted)
             return NotFound(ApiResponse<object>.Fail($"Course with ID {id} was not found."));
 

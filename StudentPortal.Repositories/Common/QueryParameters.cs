@@ -14,8 +14,7 @@ public class QueryParameters
     }
 
     public string? Search { get; set; }
-    public string? SortBy { get; set; }
-    public bool SortDescending { get; set; } = false;
+    public string? Sort { get; set; }
 
     /// <summary>Comma-separated fields for $select. e.g. "courseId,courseName"</summary>
     /// <summary>Comma-separated scalar fields to return. e.g. "courseId,courseName,semesterName"</summary>

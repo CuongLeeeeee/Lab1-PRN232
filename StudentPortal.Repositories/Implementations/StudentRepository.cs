@@ -44,10 +44,12 @@ public class StudentRepository : GenericRepository<Student>, IStudentRepository
                 s.FullName.Contains(parameters.Search) ||
                 s.Email.Contains(parameters.Search));
 
-        query = parameters.SortBy?.ToLower() switch
+        query = parameters.Sort?.ToLower() switch
         {
-            "name" => parameters.SortDescending ? query.OrderByDescending(s => s.FullName) : query.OrderBy(s => s.FullName),
-            "email" => parameters.SortDescending ? query.OrderByDescending(s => s.Email) : query.OrderBy(s => s.Email),
+            "name" => query.OrderBy(s => s.FullName),
+            "-name" => query.OrderByDescending(s => s.FullName),
+            "email" => query.OrderBy(s => s.Email),
+            "-email" => query.OrderByDescending(s => s.Email),
             _ => query.OrderBy(s => s.StudentId)
         };
 

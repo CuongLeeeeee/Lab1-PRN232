@@ -39,10 +39,12 @@ public class CourseRepository : GenericRepository<Course>, ICourseRepository
         if (!string.IsNullOrWhiteSpace(parameters.Search))
             query = query.Where(c => c.CourseName.Contains(parameters.Search));
 
-        query = parameters.SortBy?.ToLower() switch
+        query = parameters.Sort?.ToLower() switch
         {
-            "name" => parameters.SortDescending ? query.OrderByDescending(c => c.CourseName) : query.OrderBy(c => c.CourseName),
-            "semester" => parameters.SortDescending ? query.OrderByDescending(c => c.Semester.SemesterName) : query.OrderBy(c => c.Semester.SemesterName),
+            "name" => query.OrderBy(c => c.CourseName),
+            "-name" => query.OrderByDescending(c => c.CourseName),
+            "semester" => query.OrderBy(c => c.Semester.SemesterName),
+            "-semester" => query.OrderByDescending(c => c.Semester.SemesterName),
             _ => query.OrderBy(c => c.CourseId)
         };
 
