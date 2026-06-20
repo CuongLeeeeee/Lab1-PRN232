@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRN232.StuPortal.API.Common;
 using PRN232.StuPortal.Repositories.Helpers;
@@ -8,6 +9,7 @@ using PRN232.StuPortal.Services.Models.Responses;
 namespace PRN232.StuPortal.API.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/students")]
     public class StudentsController : ControllerBase
     {
@@ -99,6 +101,7 @@ namespace PRN232.StuPortal.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var deleted = await _studentService.DeleteAsync(id);

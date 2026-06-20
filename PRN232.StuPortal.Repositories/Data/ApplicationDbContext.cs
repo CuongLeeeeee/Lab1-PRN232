@@ -27,12 +27,29 @@ namespace PRN232.StuPortal.Repositories.Data
 
         public DbSet<Enrollment> Enrollments => Set<Enrollment>();
 
+        public DbSet<User> Users => Set<User>();
+
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // -- Constraints ----------------------------------------------
             modelBuilder.Entity<Student>()
                 .HasIndex(x => x.Email)
                 .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasIndex(x => x.Username)
+                .IsUnique();
+
+            modelBuilder.Entity<RefreshToken>()
+                .HasIndex(x => x.Token)
+                .IsUnique();
+
+            modelBuilder.Entity<RefreshToken>()
+                .HasOne(x => x.User)
+                .WithMany(x => x.RefreshTokens)
+                .HasForeignKey(x => x.UserId);
 
             modelBuilder.Entity<Enrollment>()
                 .HasOne(x => x.Student)
@@ -70,6 +87,24 @@ namespace PRN232.StuPortal.Repositories.Data
                 new Subject { SubjectId = 8, SubjectCode = "CS402", SubjectName = "Computer Networks", Credit = 3 },
                 new Subject { SubjectId = 9, SubjectCode = "CS403", SubjectName = "Operating Systems", Credit = 3 },
                 new Subject { SubjectId = 10, SubjectCode = "CS404", SubjectName = "Cloud Computing", Credit = 3 }
+            );
+
+            // Passwords: Admin@123, Student@123
+            modelBuilder.Entity<User>().HasData(
+                new User
+                {
+                    UserId = 1,
+                    Username = "admin",
+                    PasswordHash = "AQAAAAIAAYagAAAAEAARIjNEVWZ3iJmqu8zd7v91/S7kcGFvE48IV5XSNcAcxbkiKFJSn9fu5A/9uhtP4A==",
+                    Role = "Admin"
+                },
+                new User
+                {
+                    UserId = 2,
+                    Username = "student",
+                    PasswordHash = "AQAAAAIAAYagAAAAEP/u3cy7qpmId2ZVRDMiEQAtM6jTBjLrpxj7ltvixIqCP9MOWTe1GPPHbeyHyaeNng==",
+                    Role = "Student"
+                }
             );
 
             // -- Seed: 20 Courses (4 per semester) ------------------------
