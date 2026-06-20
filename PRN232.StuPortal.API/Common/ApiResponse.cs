@@ -13,6 +13,7 @@ namespace PRN232.StuPortal.API.Common
     [KnownType(typeof(List<EnrollmentResponse>))]
     [KnownType(typeof(SubjectResponse))]
     [KnownType(typeof(StudentResponse))]
+    [KnownType(typeof(StudentV2Response))]
     [KnownType(typeof(CourseResponse))]
     [KnownType(typeof(SemesterResponse))]
     [KnownType(typeof(EnrollmentResponse))]

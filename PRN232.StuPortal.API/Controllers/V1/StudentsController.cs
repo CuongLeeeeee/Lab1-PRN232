@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRN232.StuPortal.API.Common;
@@ -6,11 +7,12 @@ using PRN232.StuPortal.Services.Interfaces;
 using PRN232.StuPortal.Services.Models.Requests;
 using PRN232.StuPortal.Services.Models.Responses;
 
-namespace PRN232.StuPortal.API.Controllers
+namespace PRN232.StuPortal.API.Controllers.V1
 {
     [ApiController]
     [Authorize]
-    [Route("api/students")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/students")]
     public class StudentsController : ControllerBase
     {
         private readonly IStudentService _studentService;
@@ -24,7 +26,7 @@ namespace PRN232.StuPortal.API.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
+        [HttpGet(Name = "GetAllStudents")]
         public async Task<IActionResult> GetAll([FromQuery] QueryParameters query)
         {
             var result = await _studentService.GetAllAsync(query);
@@ -65,7 +67,7 @@ namespace PRN232.StuPortal.API.Controllers
             });
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}", Name = "GetStudentById")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var student = await _studentService.GetByIdAsync(id);
@@ -78,7 +80,7 @@ namespace PRN232.StuPortal.API.Controllers
             return Ok(new ApiResponse<StudentResponse> { Success = true, Data = student });
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CreateStudent")]
         public async Task<IActionResult> Create(
             [FromBody] CreateStudentRequest request,
             [FromHeader(Name = "X-Request-Id")] string? requestId)
@@ -89,12 +91,13 @@ namespace PRN232.StuPortal.API.Controllers
                 request.Email);
 
             var created = await _studentService.CreateAsync(request);
-            return CreatedAtAction(nameof(GetById),
-                new { id = created.StudentId },
+            return CreatedAtRoute(
+                "GetStudentById",
+                new { id = created.StudentId, version = HttpContext.GetRequestedApiVersion()?.ToString() ?? "1.0" },
                 new ApiResponse<StudentResponse> { Success = true, Data = created });
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}", Name = "UpdateStudent")]
         public async Task<IActionResult> Update(
             [FromRoute] int id,
             [FromBody] UpdateStudentRequest request)
@@ -113,7 +116,7 @@ namespace PRN232.StuPortal.API.Controllers
             });
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}", Name = "DeleteStudent")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {

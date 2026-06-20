@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using PRN232.StuPortal.API.Common;
 using PRN232.StuPortal.Repositories.Helpers;
@@ -8,6 +9,7 @@ using PRN232.StuPortal.Services.Models.Responses;
 namespace PRN232.StuPortal.API.Controllers
 {
     [ApiController]
+    [ApiVersionNeutral]
     [Route("api/enrollments")]
     public class EnrollmentsController : ControllerBase
     {
@@ -60,7 +62,7 @@ namespace PRN232.StuPortal.API.Controllers
             });
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}", Name = "GetEnrollmentById")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var item = await _service.GetByIdAsync(id);
@@ -73,16 +75,17 @@ namespace PRN232.StuPortal.API.Controllers
             return Ok(new ApiResponse<EnrollmentResponse> { Success = true, Data = item });
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CreateEnrollment")]
         public async Task<IActionResult> Create([FromBody] CreateEnrollmentRequest request)
         {
             var created = await _service.CreateAsync(request);
-            return CreatedAtAction(nameof(GetById),
+            return CreatedAtRoute(
+                "GetEnrollmentById",
                 new { id = created.EnrollmentId },
                 new ApiResponse<EnrollmentResponse> { Success = true, Data = created });
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}", Name = "UpdateEnrollment")]
         public async Task<IActionResult> Update(
             [FromRoute] int id,
             [FromBody] UpdateEnrollmentRequest request)
@@ -97,7 +100,7 @@ namespace PRN232.StuPortal.API.Controllers
             return Ok(new ApiResponse<object> { Success = true, Message = "Updated successfully" });
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}", Name = "DeleteEnrollment")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var deleted = await _service.DeleteAsync(id);

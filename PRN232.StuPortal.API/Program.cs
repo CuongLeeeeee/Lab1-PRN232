@@ -1,17 +1,22 @@
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using PRN232.StuPortal.API.Common;
+using PRN232.StuPortal.API.Swagger;
 using PRN232.StuPortal.Repositories.Data;
 using PRN232.StuPortal.Repositories.Interfaces;
 using PRN232.StuPortal.Repositories.Repositories;
 using PRN232.StuPortal.Services.Interfaces;
 using PRN232.StuPortal.Services.Services;
 using PRN232.StuPortal.Services.Validation.Validators;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
 
 
@@ -90,34 +95,24 @@ builder.Services.AddControllers(options =>
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateEnrollmentRequestValidator>();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
+
+builder.Services.AddApiVersioning(options =>
 {
-    c.SwaggerDoc("v1", new()
-    {
-        Title = "PRN232 StuPortal API",
-        Version = "v1",
-        Description = "Learning Management System REST API"
-    });
-
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Enter JWT access token"
-    });
-
-    c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecuritySchemeReference("Bearer", document, null),
-            new List<string>()
-        }
-    });
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+    options.ApiVersionReader = new UrlSegmentApiVersionReader();
+})
+.AddMvc()
+.AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
 });
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -132,8 +127,14 @@ using (var scope = app.Services.CreateScope())
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "PRN232 StuPortal API v1");
-    c.RoutePrefix = string.Empty; // Swagger ? http://localhost/
+    var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+    foreach (var description in provider.ApiVersionDescriptions)
+    {
+        c.SwaggerEndpoint(
+            $"/swagger/{description.GroupName}/swagger.json",
+            $"PRN232 StuPortal API {description.GroupName.ToUpperInvariant()}");
+    }
+    c.RoutePrefix = string.Empty;
 });
 
 app.UseAuthentication();

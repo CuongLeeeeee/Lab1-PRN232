@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using PRN232.StuPortal.API.Common;
 using PRN232.StuPortal.Services.Interfaces;
@@ -7,6 +8,7 @@ using PRN232.StuPortal.Services.Models.Responses;
 namespace PRN232.StuPortal.API.Controllers
 {
     [ApiController]
+    [ApiVersionNeutral]
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {

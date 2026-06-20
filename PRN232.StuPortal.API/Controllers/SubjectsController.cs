@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using PRN232.StuPortal.API.Common;
 using PRN232.StuPortal.Repositories.Helpers;
@@ -8,6 +9,7 @@ using PRN232.StuPortal.Services.Models.Responses;
 namespace PRN232.StuPortal.API.Controllers
 {
     [ApiController]
+    [ApiVersionNeutral]
     [Route("api/subjects")]
     public class SubjectsController : ControllerBase
     {
@@ -55,7 +57,7 @@ namespace PRN232.StuPortal.API.Controllers
             });
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}", Name = "GetSubjectById")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var item = await _service.GetByIdAsync(id);
@@ -68,16 +70,17 @@ namespace PRN232.StuPortal.API.Controllers
             return Ok(new ApiResponse<SubjectResponse> { Success = true, Data = item });
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CreateSubject")]
         public async Task<IActionResult> Create([FromBody] CreateSubjectRequest request)
         {
             var created = await _service.CreateAsync(request);
-            return CreatedAtAction(nameof(GetById),
+            return CreatedAtRoute(
+                "GetSubjectById",
                 new { id = created.SubjectId },
                 new ApiResponse<SubjectResponse> { Success = true, Data = created });
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}", Name = "UpdateSubject")]
         public async Task<IActionResult> Update(
             [FromRoute] int id,
             [FromBody] UpdateSubjectRequest request)
@@ -92,7 +95,7 @@ namespace PRN232.StuPortal.API.Controllers
             return Ok(new ApiResponse<object> { Success = true, Message = "Updated successfully" });
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}", Name = "DeleteSubject")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var deleted = await _service.DeleteAsync(id);
