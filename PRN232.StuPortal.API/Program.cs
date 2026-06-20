@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using PRN232.StuPortal.API.Common;
+using PRN232.StuPortal.API.Middleware;
 using PRN232.StuPortal.API.Swagger;
 using PRN232.StuPortal.Repositories.Data;
 using PRN232.StuPortal.Repositories.Interfaces;
@@ -122,6 +123,10 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate();
 }
+
+// -- Custom middleware --------------------------------------------------------
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
 
 // -- Swagger UI ---------------------------------------------------------------
 app.UseSwagger();
