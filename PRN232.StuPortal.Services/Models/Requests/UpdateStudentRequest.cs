@@ -1,11 +1,24 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace PRN232.StuPortal.Services.Models.Requests
 {
     public class UpdateStudentRequest
     {
+        [Required]
+        [StringLength(100, MinimumLength = 2)]
         public string FullName { get; set; } = string.Empty;
 
+        [Required]
+        [EmailAddress]
+        [StringLength(256)]
         public string Email { get; set; } = string.Empty;
 
+        [Phone]
+        [StringLength(20)]
+        public string? Phone { get; set; }
+
+        [Required]
+        [Range(typeof(DateTime), "01/01/1900", "01/01/2100")]
         public DateTime DateOfBirth { get; set; }
     }
 }

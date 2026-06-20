@@ -14,17 +14,21 @@ namespace PRN232.StuPortal.API.Controllers
     public class StudentsController : ControllerBase
     {
         private readonly IStudentService _studentService;
+        private readonly ILogger<StudentsController> _logger;
 
-        public StudentsController(IStudentService studentService)
-            => _studentService = studentService;
+        public StudentsController(
+            IStudentService studentService,
+            ILogger<StudentsController> logger)
+        {
+            _studentService = studentService;
+            _logger = logger;
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] QueryParameters query)
         {
             var result = await _studentService.GetAllAsync(query);
 
-            // -- Fields selection ------------------------------------------
-            // ?fields=studentId,fullName,email
             object data;
             if (!string.IsNullOrEmpty(query.Fields))
             {
@@ -62,7 +66,7 @@ namespace PRN232.StuPortal.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var student = await _studentService.GetByIdAsync(id);
             if (student == null)
@@ -75,8 +79,15 @@ namespace PRN232.StuPortal.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateStudentRequest request)
+        public async Task<IActionResult> Create(
+            [FromBody] CreateStudentRequest request,
+            [FromHeader(Name = "X-Request-Id")] string? requestId)
         {
+            _logger.LogInformation(
+                "Create student request received. X-Request-Id: {RequestId}, Email: {Email}",
+                requestId ?? "(none)",
+                request.Email);
+
             var created = await _studentService.CreateAsync(request);
             return CreatedAtAction(nameof(GetById),
                 new { id = created.StudentId },
@@ -84,7 +95,9 @@ namespace PRN232.StuPortal.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, UpdateStudentRequest request)
+        public async Task<IActionResult> Update(
+            [FromRoute] int id,
+            [FromBody] UpdateStudentRequest request)
         {
             var updated = await _studentService.UpdateAsync(id, request);
             if (!updated)
@@ -102,7 +115,7 @@ namespace PRN232.StuPortal.API.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var deleted = await _studentService.DeleteAsync(id);
             if (!deleted)

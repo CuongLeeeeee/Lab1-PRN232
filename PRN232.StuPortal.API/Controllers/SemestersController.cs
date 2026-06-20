@@ -56,7 +56,7 @@ namespace PRN232.StuPortal.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var item = await _service.GetByIdAsync(id);
             if (item == null)
@@ -69,7 +69,7 @@ namespace PRN232.StuPortal.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateSemesterRequest request)
+        public async Task<IActionResult> Create([FromBody] CreateSemesterRequest request)
         {
             var created = await _service.CreateAsync(request);
             return CreatedAtAction(nameof(GetById),
@@ -78,7 +78,9 @@ namespace PRN232.StuPortal.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, UpdateSemesterRequest request)
+        public async Task<IActionResult> Update(
+            [FromRoute] int id,
+            [FromBody] UpdateSemesterRequest request)
         {
             var updated = await _service.UpdateAsync(id, request);
             if (!updated)
@@ -91,7 +93,7 @@ namespace PRN232.StuPortal.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var deleted = await _service.DeleteAsync(id);
             if (!deleted)

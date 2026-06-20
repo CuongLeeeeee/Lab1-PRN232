@@ -1,18 +1,15 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PRN232.StuPortal.Services.Models.Requests
 {
     public class CreateCourseRequest
     {
         [Required]
+        [StringLength(200, MinimumLength = 2)]
         public string CourseName { get; set; } = string.Empty;
 
         [Required]
+        [Range(1, int.MaxValue)]
         public int SemesterId { get; set; }
     }
 }

@@ -1,12 +1,17 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using PRN232.StuPortal.API.Common;
 using PRN232.StuPortal.Repositories.Data;
 using PRN232.StuPortal.Repositories.Interfaces;
 using PRN232.StuPortal.Repositories.Repositories;
 using PRN232.StuPortal.Services.Interfaces;
 using PRN232.StuPortal.Services.Services;
-using Microsoft.OpenApi;
+using PRN232.StuPortal.Services.Validation.Validators;
 using System.Text;
 
 
@@ -63,7 +68,28 @@ builder.Services.AddControllers(options =>
 {
     options.ReturnHttpNotAcceptable = true;
 })
-.AddXmlDataContractSerializerFormatters();
+.AddXmlDataContractSerializerFormatters()
+.ConfigureApiBehaviorOptions(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Where(e => e.Value?.Errors.Count > 0)
+            .ToDictionary(
+                e => e.Key,
+                e => e.Value!.Errors.Select(x => x.ErrorMessage).ToArray());
+
+        return new BadRequestObjectResult(new ApiResponse<object>
+        {
+            Success = false,
+            Message = "Validation failed",
+            Errors = errors
+        });
+    };
+});
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateEnrollmentRequestValidator>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

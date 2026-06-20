@@ -4,7 +4,6 @@ using PRN232.StuPortal.Repositories.Helpers;
 using PRN232.StuPortal.Services.Interfaces;
 using PRN232.StuPortal.Services.Models.Requests;
 using PRN232.StuPortal.Services.Models.Responses;
-using PRN232.StuPortal.Services.Services;
 
 namespace PRN232.StuPortal.API.Controllers
 {
@@ -23,7 +22,6 @@ namespace PRN232.StuPortal.API.Controllers
             _enrollmentService = enrollmentService;
         }
 
-        // -- GET /api/courses ----------------------------------------------
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] QueryParameters query)
         {
@@ -77,9 +75,8 @@ namespace PRN232.StuPortal.API.Controllers
             });
         }
 
-        // -- GET /api/courses/{id} -----------------------------------------
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var item = await _courseService.GetByIdAsync(id);
             if (item == null)
@@ -91,10 +88,9 @@ namespace PRN232.StuPortal.API.Controllers
             return Ok(new ApiResponse<CourseResponse> { Success = true, Data = item });
         }
 
-        // -- GET /api/courses/{id}/enrollments?expand=student --------------
         [HttpGet("{id}/enrollments")]
         public async Task<IActionResult> GetEnrollments(
-            int id,
+            [FromRoute] int id,
             [FromQuery] QueryParameters query)
         {
             var result = await _enrollmentService.GetByCourseIdAsync(id, query);
@@ -121,9 +117,8 @@ namespace PRN232.StuPortal.API.Controllers
             });
         }
 
-        // -- POST /api/courses ---------------------------------------------
         [HttpPost]
-        public async Task<IActionResult> Create(CreateCourseRequest request)
+        public async Task<IActionResult> Create([FromBody] CreateCourseRequest request)
         {
             var created = await _courseService.CreateAsync(request);
             return CreatedAtAction(nameof(GetById),
@@ -131,9 +126,10 @@ namespace PRN232.StuPortal.API.Controllers
                 new ApiResponse<CourseResponse> { Success = true, Data = created });
         }
 
-        // -- PUT /api/courses/{id} -----------------------------------------
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, UpdateCourseRequest request)
+        public async Task<IActionResult> Update(
+            [FromRoute] int id,
+            [FromBody] UpdateCourseRequest request)
         {
             var updated = await _courseService.UpdateAsync(id, request);
             if (!updated)
@@ -145,9 +141,8 @@ namespace PRN232.StuPortal.API.Controllers
             return Ok(new ApiResponse<object> { Success = true, Message = "Updated successfully" });
         }
 
-        // -- DELETE /api/courses/{id} --------------------------------------
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var deleted = await _courseService.DeleteAsync(id);
             if (!deleted)
