@@ -56,8 +56,14 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
-// -- Controllers + Swagger ----------------------------------------------------
-builder.Services.AddControllers();
+// -- Controllers + Swagger + Content Negotiation ------------------------------
+// Hỗ trợ application/json (mặc định) và application/xml (DataContractSerializer)
+// ReturnHttpNotAcceptable = true → trả HTTP 406 nếu Accept header không được hỗ trợ
+builder.Services.AddControllers(options =>
+{
+    options.ReturnHttpNotAcceptable = true;
+})
+.AddXmlDataContractSerializerFormatters();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

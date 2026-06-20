@@ -191,7 +191,7 @@ namespace PRN232.StuPortal.Repositories.Repositories
 
             return new PagedResult<EnrollmentBusinessModel>
             {
-                Items = rawItems.Select(x => MapToBusinessModel(x, expandStudent, expandCourse)),
+                Items = rawItems.Select(x => MapToBusinessModel(x, expandStudent, expandCourse)).ToList(),
                 Page = query.Page,
                 PageSize = query.Size,
                 TotalItems = totalItems,

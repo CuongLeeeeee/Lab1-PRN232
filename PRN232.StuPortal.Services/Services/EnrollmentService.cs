@@ -22,7 +22,7 @@ namespace PRN232.StuPortal.Services.Services
             var result = await _repo.GetAllAsync(query);
             return new PagedResult<EnrollmentResponse>
             {
-                Items = result.Items.Select(Map),
+                Items = result.Items.Select(Map).ToList(),
                 Page = result.Page,
                 PageSize = result.PageSize,
                 TotalItems = result.TotalItems,
@@ -88,7 +88,7 @@ namespace PRN232.StuPortal.Services.Services
 
             return new PagedResult<EnrollmentResponse>
             {
-                Items = result.Items.Select(Map),
+                Items = result.Items.Select(Map).ToList(),
                 Page = result.Page,
                 PageSize = result.PageSize,
                 TotalItems = result.TotalItems,

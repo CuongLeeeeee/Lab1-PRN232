@@ -51,12 +51,12 @@ namespace PRN232.StuPortal.API.Controllers
             {
                 Success = true,
                 Data = data,
-                Pagination = new
+                Pagination = new PaginationMeta
                 {
-                    result.Page,
-                    result.PageSize,
-                    result.TotalItems,
-                    result.TotalPages
+                    Page = result.Page,
+                    PageSize = result.PageSize,
+                    TotalItems = result.TotalItems,
+                    TotalPages = result.TotalPages
                 }
             });
         }

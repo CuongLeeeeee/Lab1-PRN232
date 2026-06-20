@@ -28,7 +28,7 @@ namespace PRN232.StuPortal.Services.Services
                     SubjectCode = x.SubjectCode,
                     SubjectName = x.SubjectName,
                     Credit = x.Credit
-                }),
+                }).ToList(),
                 Page = result.Page,
                 PageSize = result.PageSize,
                 TotalItems = result.TotalItems,

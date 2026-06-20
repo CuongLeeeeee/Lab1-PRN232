@@ -30,7 +30,7 @@ namespace PRN232.StuPortal.Services.Services
                     Semester = x.SemesterName != null
                         ? new SemesterResponse { SemesterName = x.SemesterName }
                         : null
-                }),
+                }).ToList(),
                 Page = result.Page,
                 PageSize = result.PageSize,
                 TotalItems = result.TotalItems,

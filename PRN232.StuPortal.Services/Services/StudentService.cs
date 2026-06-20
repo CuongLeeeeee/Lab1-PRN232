@@ -37,7 +37,7 @@ namespace PRN232.StuPortal.Services.Services
                         FullName = x.FullName,
                         Email = x.Email,
                         DateOfBirth = x.DateOfBirth
-                    }),
+                    }).ToList(),
                 Page = result.Page,
                 PageSize = result.PageSize,
                 TotalItems = result.TotalItems,
